@@ -5,6 +5,7 @@
  */
 package it.marconi.controller;
 
+import it.marconi.dto.LoginRequest;
 import it.marconi.dto.RegisterRequest;
 import it.marconi.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,4 +33,11 @@ public class AuthController {
             
             return new ResponseEntity(HttpStatus.OK);
     }
+    
+      @PostMapping("/login")
+      public String login(@RequestBody LoginRequest loginRequest){
+          
+         return authService.login(loginRequest);
+          
+      }
 }

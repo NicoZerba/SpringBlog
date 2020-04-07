@@ -5,10 +5,16 @@
  */
 package it.marconi.service;
 
+import it.marconi.dto.LoginRequest;
 import it.marconi.dto.RegisterRequest;
 import it.marconi.entities.User;
 import it.marconi.repository.UserRepo;
+import it.marconi.security.Jwt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +31,12 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
     
+    @Autowired
+    private AuthenticationManager authenticationManager;
+    
+    @Autowired
+    private Jwt jwt;
+    
     public void signup(RegisterRequest registerRequest) {
         User user= new User();
         user.setUserName(registerRequest.getUsername());
@@ -36,6 +48,14 @@ public class AuthService {
 
     private String encodePassword(String password) {
         return passwordEncoder.encode(password);
+    }
+
+    public String login(LoginRequest loginRequest) {
+         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                loginRequest.getPassword()));
+         
+            SecurityContextHolder.getContext().setAuthentication(authenticate);
+           return jwt.generateToken(authenticate);
     }
     
    
